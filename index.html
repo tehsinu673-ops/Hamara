@@ -479,7 +479,7 @@ body{height:100%;font-family:'Outfit',sans-serif;display:flex;justify-content:ce
       <div style="text-align:left;"><div>Phone Number se Login</div><div style="color:var(--g3);font-size:12px;margin-top:2px;">OTP code aayega</div></div>
       <i class="fas fa-chevron-right" style="color:var(--d2);margin-left:auto;"></i>
     </button>
-    <button onclick="demoLogin()" style="width:100%;padding:13px;background:transparent;border:1.5px dashed var(--bc2);border-radius:12px;color:var(--d1);font-size:13px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif;">⚡ Demo Mode — Direct Enter Karein</button>
+    
     <div style="margin-top:14px;background:var(--bg3);border:1px solid var(--bc);border-radius:12px;padding:12px 14px;color:var(--d1);font-size:12.5px;line-height:1.65;">
       <i class="fas fa-shield-halved" style="color:var(--g4);margin-right:6px;"></i>Messages end-to-end encrypted hain. Phone number verify hoga 🔒
     </div>
@@ -1496,16 +1496,15 @@ function sendOTP(){
   var cc = $('cc-sel').value || '+92';
   var fullPhone = cc + phone.replace(/^0+/, '');
   $('phone-status').textContent = 'OTP bheja ja raha hai...';
-  /* Setup reCAPTCHA if not already done */
   if(!window._recapVerifier){
     try{
       window._recapVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'normal',
+        size: 'invisible',
         callback: function(){},
         'expired-callback': function(){ window._recapVerifier = null; }
       });
     }catch(e){
-      $('phone-status').textContent = 'reCAPTCHA error: '+e.message;
+      $('phone-status').textContent = 'Masla aya: ' + e.message;
       return;
     }
   }
@@ -1519,46 +1518,43 @@ function sendOTP(){
       showToast('OTP bhej diya! ✅');
     })
     .catch(function(err){
-      $('phone-status').textContent = err.message || 'OTP send nahi hua';
-      showToast('Error: ' + (err.message || 'OTP send failed'));
-      /* Reset verifier on error so user can retry */
       if(window._recapVerifier){ try{ window._recapVerifier.clear(); }catch(e2){} window._recapVerifier = null; }
+      var msg = err.message || '';
+      if(msg.includes('api-key-not-valid')){
+        $('phone-status').textContent = '⚠️ Firebase domain allow nahi — Firebase Console mein authorized domain add karein';
+      } else if(msg.includes('too-many-requests')){
+        $('phone-status').textContent = '⚠️ Bahut zyada requests — kuch der baad try karein';
+      } else {
+        $('phone-status').textContent = msg || 'OTP send nahi hua — dobara try karein';
+      }
+      showToast('OTP error: ' + (err.code || 'unknown'));
     });
 }
 function otpNext(el,nextId){if(el.value&&nextId)$(nextId).focus();}
 function verifyOTP(){
   var code = ['o1','o2','o3','o4','o5','o6'].map(function(id){return $(id)?$(id).value:'';}).join('');
-  if(window._fbConfirmation){
-    window._fbConfirmation.confirm(code)
-      .then(function(result){
-        var fbUser = result.user;
-        /* Keep existing profile data if already set, just update phone */
-        var saved = localStorage.getItem('hm_user_v7');
-        if(saved){ APP.user = JSON.parse(saved); APP.user.phone = fbUser.phoneNumber; goMainApp(); }
-        else{
-          APP.user = { phone: fbUser.phoneNumber };
-          goScreen('profile-setup');
-        }
-        localStorage.setItem('hm_user_v7', JSON.stringify(APP.user));
-        showToast('Phone verify ho gaya! ✅');
-      })
-      .catch(function(){
-        showToast('Galat OTP. Dobara koshish karein.');
-      });
-    return;
-  }
-  /* Fallback demo mode */
-  if(code!=='123456'){showToast('Galat OTP. Demo: 123456');return;}
-  var saved = localStorage.getItem('hm_user_v7');
-  if(saved){APP.user=JSON.parse(saved);goMainApp();}
-  else goScreen('profile-setup');
+  if(code.length < 6){ showToast('6 digit code enter karein'); return; }
+  if(!window._fbConfirmation){ showToast('Pehle OTP mangwao'); return; }
+  window._fbConfirmation.confirm(code)
+    .then(function(result){
+      var fbUser = result.user;
+      var saved = localStorage.getItem('hm_user_v7');
+      if(saved){
+        APP.user = JSON.parse(saved);
+        APP.user.phone = fbUser.phoneNumber;
+        goMainApp();
+      } else {
+        APP.user = { phone: fbUser.phoneNumber };
+        goScreen('profile-setup');
+      }
+      localStorage.setItem('hm_user_v7', JSON.stringify(APP.user));
+      showToast('Phone verify ho gaya! ✅');
+    })
+    .catch(function(err){
+      showToast('Galat OTP — dobara check karein');
+    });
 }
-function demoLogin(){
-  APP.user = {name:'Ali Hassan',username:'ali_hassan',initials:'AH',city:'Karachi',country:'Pakistan',flag:'🇵🇰',phone:'+92 321 0000000',av:'av-me',bio:'Digital creator | Making Pakistan proud 🚀'};
-  localStorage.setItem('hm_user_v7',JSON.stringify(APP.user));
-  goMainApp();
-  showToast('Demo mode — Welcome! 🚀');
-}
+function demoLogin(){}
 window.saveProfile = async function() {
   var name = document.getElementById('setup-name').value.trim();
   var city = document.getElementById('setup-city').value.trim();
@@ -1596,7 +1592,7 @@ function doLogout(){
 
 /* ── TOAST ── */
 var toastTimer = null;
-function showToast(msg){
+function showToast(msg, dur){
   var t=$('toast');
   t.textContent=msg;t.classList.add('show');
   clearTimeout(toastTimer);
