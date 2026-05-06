@@ -498,20 +498,58 @@ body{height:100%;font-family:'Outfit',sans-serif;display:flex;justify-content:ce
   <div class="auth-body">
     <div style="display:flex;gap:8px;margin-bottom:14px;">
       <div class="finput-wrap" style="width:110px;flex-shrink:0;margin:0;">
-        <select id="cc-sel" class="finput" style="width:100%;appearance:none;">
-          <option value="+92">🇵🇰 +92</option><option value="+971">🇦🇪 +971</option>
-          <option value="+966">🇸🇦 +966</option><option value="+1">🇺🇸 +1</option>
-          <option value="+44">🇬🇧 +44</option><option value="+91">🇮🇳 +91</option>
-          <option value="+880">🇧🇩 +880</option><option value="+90">🇹🇷 +90</option>
-          <option value="+49">🇩🇪 +49</option><option value="+61">🇦🇺 +61</option>
-        </select>
+        <select id="cc-sel" class="finput" style="width:100%;appearance:none;"><option value="+92">🇵🇰 +92 Pakistan</option>
+          <option value="+1">🇺🇸 +1 USA/Canada</option>
+          <option value="+44">🇬🇧 +44 UK</option>
+          <option value="+971">🇦🇪 +971 UAE</option>
+          <option value="+966">🇸🇦 +966 Saudi Arabia</option>
+          <option value="+91">🇮🇳 +91 India</option>
+          <option value="+880">🇧🇩 +880 Bangladesh</option>
+          <option value="+94">🇱🇰 +94 Sri Lanka</option>
+          <option value="+93">🇦🇫 +93 Afghanistan</option>
+          <option value="+968">🇴🇲 +968 Oman</option>
+          <option value="+974">🇶🇦 +974 Qatar</option>
+          <option value="+965">🇰🇼 +965 Kuwait</option>
+          <option value="+973">🇧🇭 +973 Bahrain</option>
+          <option value="+49">🇩🇪 +49 Germany</option>
+          <option value="+33">🇫🇷 +33 France</option>
+          <option value="+39">🇮🇹 +39 Italy</option>
+          <option value="+34">🇪🇸 +34 Spain</option>
+          <option value="+7">🇷🇺 +7 Russia</option>
+          <option value="+86">🇨🇳 +86 China</option>
+          <option value="+81">🇯🇵 +81 Japan</option>
+          <option value="+82">🇰🇷 +82 South Korea</option>
+          <option value="+55">🇧🇷 +55 Brazil</option>
+          <option value="+27">🇿🇦 +27 South Africa</option>
+          <option value="+20">🇪🇬 +20 Egypt</option>
+          <option value="+234">🇳🇬 +234 Nigeria</option>
+          <option value="+254">🇰🇪 +254 Kenya</option>
+          <option value="+60">🇲🇾 +60 Malaysia</option>
+          <option value="+65">🇸🇬 +65 Singapore</option>
+          <option value="+62">🇮🇩 +62 Indonesia</option>
+          <option value="+63">🇵🇭 +63 Philippines</option>
+          <option value="+66">🇹🇭 +66 Thailand</option>
+          <option value="+84">🇻🇳 +84 Vietnam</option>
+          <option value="+98">🇮🇷 +98 Iran</option>
+          <option value="+90">🇹🇷 +90 Turkey</option>
+          <option value="+31">🇳🇱 +31 Netherlands</option>
+          <option value="+46">🇸🇪 +46 Sweden</option>
+          <option value="+47">🇳🇴 +47 Norway</option>
+          <option value="+45">🇩🇰 +45 Denmark</option>
+          <option value="+41">🇨🇭 +41 Switzerland</option>
+          <option value="+32">🇧🇪 +32 Belgium</option>
+          <option value="+48">🇵🇱 +48 Poland</option>
+          <option value="+61">🇦🇺 +61 Australia</option>
+          <option value="+64">🇳🇿 +64 New Zealand</option>
+          <option value="+52">🇲🇽 +52 Mexico</option>
+          <option value="+54">🇦🇷 +54 Argentina</option></select>
       </div>
       <div class="finput-wrap" style="flex:1;margin:0;">
         <input id="phone-inp" class="finput" type="tel" placeholder="3001234567" style="width:100%;">
       </div>
     </div>
     <div id="phone-status" style="color:var(--d2);font-size:13px;text-align:center;margin-bottom:12px;min-height:20px;"></div>
-    <div id="recaptcha-container" style="margin-bottom:12px;display:flex;justify-content:center;"></div>
+    <div id="recaptcha-container" style="margin:12px 0;display:flex;justify-content:center;min-height:78px;"></div>
     <button class="btn-primary" onclick="sendOTP()"><i class="fas fa-paper-plane"></i> OTP Bhejein</button>
     <button onclick="goScreen('landing')" style="width:100%;padding:12px;background:transparent;border:none;color:var(--d2);font-size:14px;cursor:pointer;font-family:Outfit,sans-serif;margin-top:8px;"><i class="fas fa-arrow-left"></i> Wapas jao</button>
   </div>
@@ -1499,7 +1537,7 @@ function sendOTP(){
   if(!window._recapVerifier){
     try{
       window._recapVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
+        size: 'normal',
         callback: function(){},
         'expired-callback': function(){ window._recapVerifier = null; }
       });
