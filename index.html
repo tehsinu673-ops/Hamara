@@ -1513,7 +1513,7 @@ function goScreen(id){
       if(!window._recapVerifier){
         try{
           window._recapVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            size: 'normal',
+            size: 'invisible',
             callback: function(token){
               window._recapToken = token;
             },
@@ -1569,8 +1569,9 @@ function sendOTP(){
         window._recapVerifier = null;
         window._recapToken = null;
         var code = err.code || '';
+        console.error('Firebase OTP error:', code, err.message);
         if(code.includes('api-key-not-valid')){
-          $('phone-status').textContent = '⚠️ Firebase error — hamara-8ma7.vercel.app Firebase mein add hai?';
+          $('phone-status').textContent = '⚠️ API Key error [' + code + '] — Google Cloud Console mein API restriction check karein';
         } else if(code.includes('too-many-requests')){
           $('phone-status').textContent = '⚠️ Bahut zyada requests — 1 ghante baad try karein';
         } else if(code.includes('invalid-phone-number')){
@@ -1586,7 +1587,7 @@ function sendOTP(){
   } else {
     try{
       var verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'normal',
+        size: 'invisible',
         callback: function(){},
         'expired-callback': function(){ window._recapVerifier = null; }
       });
