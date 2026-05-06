@@ -1294,7 +1294,7 @@ body{height:100%;font-family:'Outfit',sans-serif;display:flex;justify-content:ce
 
 /* ── FIREBASE PHONE AUTH ── */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, setDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const _fbApp = initializeApp({
@@ -1586,8 +1586,13 @@ window.saveProfile = async function() {
 }
 function doLogout(){
   if(!confirm('Logout karna chahte hain?'))return;
+  signOut(auth).catch(function(){});
   localStorage.removeItem('hm_user_v7');
-  APP.user=null;goScreen('landing');showToast('Logout ho gaye 👋');
+  localStorage.removeItem('hm_chats');
+  localStorage.removeItem('hm_msgs');
+  APP.user = null;
+  goScreen('landing');
+  showToast('Logout ho gaye! 👋');
 }
 
 /* ── TOAST ── */
@@ -2568,6 +2573,10 @@ window.forwardMsg = forwardMsg;
 window.deleteMsg = deleteMsg;
 window.cancelEdit = cancelEdit;
 window.clearReply = clearReply;
+window.doLogout = doLogout;
+window.playVoice = playVoice;
+window.showGroupChat = showGroupChat;
+window.saveProfile = saveProfile;
 
 /* ── START ── */
 window.addEventListener('load',function(){init();});
